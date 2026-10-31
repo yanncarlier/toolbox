@@ -1,4 +1,4 @@
-# Built-In Linux Tools (Summary)
+# Linux notes
 
 Source: [The Built-In Linux Tools I Wish Someone Had Shown Me Earlier](https://medium.com/@fatihaali093/the-built-in-linux-tools-i-wish-someone-had-shown-me-earlier-4621005dffa9) — Fateyaly, Medium
 
@@ -217,3 +217,37 @@ fdupes -rdN Videos/
 ------
 
 du -sh ~/.[^.]* * | sort -h
+
+
+Here are one-liners that append `.txt` to every file in the current directory (change `.txt` to whatever you need):
+
+```bash
+for f in *; do [ -f "$f" ] && mv -- "$f" "$f.txt"; done
+```
+
+Only files that have no extension yet:
+
+```bash
+find . -maxdepth 1 -type f ! -name '*.*' -exec sh -c 'mv -- "$1" "$1.txt"' _ {} \;
+```
+
+Using `rename` (the Perl version, common on Debian/Ubuntu):
+
+```bash
+rename 's/$/.txt/' *
+```
+
+Add `-n` to `rename` (or `echo` before `mv`) to preview the changes first.
+
+
+
+ Change "_" in the files names to "-" recursively
+
+```
+find . -depth -name '*_*' -execdir bash -c 'for f; do mv -n -- "$f" "${f//_/-}"; done' _ {} +
+```
+
+
+
+
+
