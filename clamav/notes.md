@@ -8,6 +8,21 @@ sudo tail -n 20 /var/log/clamav/freshclam.log     # are definitions updating?
 apt-cache rdepends --installed clamav-daemon      # what other packages depend on it?
 ```
 
+### Update
+
+```
+sudo systemctl stop clamav-freshclam
+sudo freshclam
+sudo systemctl start clamav-freshclam
+```
+
+### Why it might not be updating
+
+```bash
+systemctl status clamav-freshclam
+sudo tail -n 30 /var/log/clamav/freshclam.log
+```
+
 
 
 ### If you want to use it
@@ -15,7 +30,7 @@ apt-cache rdepends --installed clamav-daemon      # what other packages depend o
 Run a manual scan of your home directory:
 
 ```bash
-clamscan -r --infected ~
+clamscan -r --infected ~/Desktop/
 ```
 
 Or use the daemon, which is faster since the signatures are already loaded:
