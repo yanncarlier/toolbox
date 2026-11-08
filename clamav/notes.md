@@ -39,4 +39,9 @@ Or use the daemon, which is faster since the signatures are already loaded:
 clamdscan --multiscan --fdpass ~
 ```
 
-For real-time scanning you’d need to configure `clamonacc` (on-access scanning) in `/etc/clamav/clamd.conf`. If you don’t need any of this, you can remove it with `sudo apt remove clamav clamav-daemon clamav-freshclam clamav-base clamdscan`.
+For real-time scanning you’d need to configure `clamonacc` (on-access scanning) in `/etc/clamav/clamd.conf`. If you don’t need any of this, you can remove it with 
+
+```
+sudo apt remove clamav clamav-daemon clamav-freshclam clamav-base clamdscan
+```
+
