@@ -1,11 +1,77 @@
 # Linux notes
 
-Source: [The Built-In Linux Tools I Wish Someone Had Shown Me Earlier](https://medium.com/@fatihaali093/the-built-in-linux-tools-i-wish-someone-had-shown-me-earlier-4621005dffa9) — Fateyaly, Medium
 
-Premise: you don't need dozens of third-party utilities to be productive on Linux — many essential troubleshooting/debugging/investigation tools already ship with the OS. They all **observe** the system without modifying it.
 
-## `ss` — inspect the network stack
-Faster, richer replacement for `netstat`; talks to the kernel via Netlink instead of parsing `/proc`.
+View SSH service logs:
+
+```
+sudo journalctl -u ssh
+```
+
+Count failed login attempts for non-existent users:
+
+```
+sudo journalctl -u ssh | grep -c "Invalid user"
+```
+
+List and count the most tried invalid usernames:
+
+```
+sudo journalctl -u ssh | grep "Invalid user" | awk '{print $8}' | sort | uniq -c | sort -rn
+```
+
+Count login attempts against the root user:
+
+```
+sudo journalctl -u ssh | grep -c "Authenticating user root"
+```
+
+Count unique attacking IP addresses (for invalid users):
+
+```
+sudo journalctl -u ssh | grep "Invalid user" | awk '{print $10}' | sort -u | wc -l
+```
+
+Install whois and look up IP ownership:
+
+```
+sudo apt install whois
+whois <IP_ADDRESS>
+```
+
+Find the server's network interface name:
+
+```
+ip a
+```
+
+Monitor incoming traffic/port scans on unused ports:
+
+```
+sudo tcpdump -i ens5 -n not port 22 and not port 80 and not port 443
+```
+
+Watch live Nginx web access logs:
+
+```
+sudo tail -f /var/log/nginx/access.log
+```
+
+Check for any web requests that returned an HTTP 200 (OK) status across current and rotated logs:
+
+```
+sudo awk '$9 == 200' /var/log/nginx/access.log*
+```
+
+Verify which SSH logins actually succeeded:
+
+```
+sudo journalctl -u ssh | grep "Accepted"
+```
+
+
+
+`ss` — inspect the network stack Faster, richer replacement for `netstat`; talks to the kernel via Netlink instead of parsing `/proc`.
 
 ```bash
 ss -tulpn      # listening services overview
@@ -13,8 +79,7 @@ ss -ant        # established TCP sessions
 ```
 Useful for: unexpected outbound connections, service verification, connection leaks, incident response.
 
-## `lsof` — everything is a file
-Exposes file descriptors held by processes (sockets, pipes, devices, directories, libraries).
+`lsof` — everything is a file Exposes file descriptors held by processes (sockets, pipes, devices, directories, libraries).
 
 ```bash
 lsof -p <PID>       # files opened by a process
@@ -22,8 +87,7 @@ lsof -i :443        # process owning a port
 lsof | grep deleted # deleted files still held open (disk space leaks)
 ```
 
-## `journalctl` — structured system logging
-Centralized systemd journal instead of hunting through `/var/log`.
+`journalctl` — structured system logging Centralized systemd journal instead of hunting through `/var/log`.
 
 ```bash
 journalctl -u nginx             # logs for a specific service
@@ -31,7 +95,8 @@ journalctl --since "30 minutes ago"
 journalctl -b                   # current boot
 ```
 
-## `vmstat` — memory problems rarely look like memory problems
+`vmstat` — memory problems rarely look like memory problems
+
 ```bash
 vmstat 1
 ```
@@ -43,55 +108,58 @@ Key columns:
 
 High swap activity can mimic CPU saturation but is actually memory pressure.
 
-## `dmesg` — listen to the kernel
+`dmesg` — listen to the kernel
+
 ```bash
 dmesg -T | tail
 ```
 Look for: hardware failures, disk I/O errors, OOM kills, driver issues, filesystem problems, network device resets.
 
-## `find` — more than file search
+`find` — more than file search
+
 ```bash
 find /var/log -mtime -1        # modified in last day
 find / -type f -size +500M     # large files
 find /home -user alice         # files owned by a user
 ```
 
-## `xargs` — turn output into workflows
+`xargs` — turn output into workflows
+
 ```bash
 find . -name "*.log" | xargs grep "ERROR"
 find . -type d -empty | xargs rmdir
 ```
 
-## `tee` — observe without interrupting
+`tee` — observe without interrupting
+
 ```bash
 journalctl -u nginx | tee errors.log
 ```
 Writes to terminal and file simultaneously.
 
-## `watch` — continuous observation
+`watch` — continuous observation
+
 ```bash
 watch -n 2 "ss -ant"
 watch -n 1 "free -h"
 ```
 Runs a command repeatedly at fixed intervals.
 
-## `diff` — compare before assuming
+`diff` — compare before assuming
+
 ```bash
 diff nginx.conf nginx.conf.backup
 ```
 Quickly spots configuration drift.
 
-## `env` — your runtime configuration
+`env` — your runtime configuration
+
 ```bash
 env
 ```
 Check environment variables early when debugging containers, CI/CD, or systemd services — missing secrets/paths are a common root cause.
 
-## Takeaway
-These tools share a common trait: none of them modify the system, they only observe it (network state, processes, memory, file descriptors, kernel activity, config, runtime env). Learn what's already built in before reaching for new packages.
-## 🧠 Memory Management (16GB Swap Setup)
-
-## Recreate Swapfile
+🧠 Memory Management (16GB Swap Setup) Recreate Swapfile
 
 ```bash
 sudo swapoff -a
@@ -102,9 +170,7 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
 
-## Enable Persistence
-
-Check current mounts:
+Enable Persistence Check current mounts:
 
 ```bash
 cat /etc/fstab
@@ -116,9 +182,7 @@ Append this line to `/etc/fstab`:
 /swapfile none swap sw 0 0
 ```
 
-## Optimize Swappiness
-
-Set swappiness to 10 (reduces disk writing):
+Optimize Swappiness Set swappiness to 10 (reduces disk writing):
 
 ```bash
 echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf && sudo sysctl -p
@@ -126,17 +190,13 @@ echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf && sudo sysc
 
 ------
 
-## ⚙️ System Maintenance & Automation
-
-## Manual Update Command
+⚙️ System Maintenance & Automation Manual Update Command
 
 ```bash
 sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo snap refresh
 ```
 
-## Automated Nightly Cron Job
-
-Check current system cron tasks:
+Automated Nightly Cron Job Check current system cron tasks:
 
 ```bash
 cat /etc/crontab
@@ -150,9 +210,7 @@ Add this line to `/etc/crontab` to run updates daily at 3:00 AM:
 
 ------
 
-## 🟢 Node.js Management via 'n'
-
-## Installation Steps
+🟢 Node.js Management via 'n' Installation Steps
 
 ```bash
 # 1. Install bootstrap Node/NPM
@@ -172,9 +230,7 @@ exec bash
 node -v
 ```
 
-## Future Upgrades
-
-To upgrade Node in the future, simply run:
+Future Upgrades To upgrade Node in the future, simply run:
 
 ```bash
 sudo n lts
@@ -182,15 +238,13 @@ sudo n lts
 
 ------
 
-## 🧹 Project Cleanup (Remove Virtual Envs & Node Modules)
-
-## Dry Run (List Targets)
+🧹 Project Cleanup (Remove Virtual Envs & Node Modules) Dry Run (List Targets)
 
 ```bash
 find . \( -name ".venv" -o -name "node_modules" \) -type d -prune -print
 ```
 
-## Delete Targets
+Delete Targets
 
 ```bash
 find . \( -name ".venv" -o -name "node_modules" \) -type d -prune -exec rm -rf {} +
@@ -198,17 +252,13 @@ find . \( -name ".venv" -o -name "node_modules" \) -type d -prune -exec rm -rf {
 
 ------
 
-## 🎞️ Duplicate Video Finder (`fdupes`)
-
-## Scan and List Duplicates
+🎞️ Duplicate Video Finder (`fdupes`) Scan and List Duplicates
 
 ```bash
 fdupes -r Videos/
 ```
 
-## Delete Duplicates Automatically
-
-*Keeps the first file, deletes the rest without prompting:*
+Delete Duplicates Automatically *Keeps the first file, deletes the rest without prompting:*
 
 ```bash
 fdupes -rdN Videos/
