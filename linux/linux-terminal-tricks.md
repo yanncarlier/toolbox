@@ -1,19 +1,15 @@
-# 10 Essential Linux Terminal Tricks & Shortcuts
-
-**Source:** [10 Linux Tricks I WISH I Knew Sooner (In 9 Minutes)](https://youtu.be/JjnICN3yW4E) by **StackMonsters**
-
-This guide summarizes 10 practical Bash shortcuts and commands that work out-of-the-box on almost every Linux distribution (including Ubuntu) to save time and reduce repetitive typing.
+# Linux Terminal Tricks & Shortcuts  
 
 ---
 
-## 1. Search Your Command History (`Ctrl + R`)
+###1. Search Your Command History (`Ctrl + R`)
 Instead of pressing the `Up` arrow repeatedly to find an old command, use reverse-i-search.
 * **Shortcut:** `Ctrl + R`
 * **How it works:** Press `Ctrl + R` and start typing any part of a previous command. Press `Ctrl + R` again to cycle backward through older matches, `Enter` to run it immediately, or `Right Arrow` / `Esc` to place it on your prompt for editing.
 
 ---
 
-## 2. Rerun the Last Command as Root (`sudo !!`)
+###2. Rerun the Last Command as Root (`sudo !!`)
 Forgot to type `sudo` before running a command that requires root privileges? You don't need to retype the whole command.
 * **Command:**
   ```bash
@@ -23,7 +19,7 @@ Forgot to type `sudo` before running a command that requires root privileges? Yo
 
 ---
 
-## 3. Reuse the Last Argument (`Alt + .` or `$_`)
+###3. Reuse the Last Argument (`Alt + .` or `$_`)
 Quickly grab the last argument (such as a long file path or directory name) from your previous command.
 * **Shortcut:** `Alt + .` (or `Esc` followed by `.`)
 * **Alternative Variable:** `$_`
@@ -36,7 +32,7 @@ Quickly grab the last argument (such as a long file path or directory name) from
 
 ---
 
-## 4. Jump Back to the Previous Directory (`cd -`)
+###4. Jump Back to the Previous Directory (`cd -`)
 Toggle effortlessly between your current working directory and the last directory you were in.
 * **Command:**
   ```bash
@@ -46,7 +42,7 @@ Toggle effortlessly between your current working directory and the last director
 
 ---
 
-## 5. Edit Command Lines Fast (`Ctrl + A`, `Ctrl + E`, `Ctrl + W`)
+###5. Edit Command Lines Fast (`Ctrl + A`, `Ctrl + E`, `Ctrl + W`)
 Stop holding down the `Left` or `Right` arrow keys to navigate long commands.
 * **`Ctrl + A`:** Jump the cursor to the **beginning** of the line.
 * **`Ctrl + E`:** Jump the cursor to the **end** of the line.
@@ -54,7 +50,7 @@ Stop holding down the `Left` or `Right` arrow keys to navigate long commands.
 
 ---
 
-## 6. Append to Root-Owned Files (`sudo tee -a`)
+###6. Append to Root-Owned Files (`sudo tee -a`)
 Standard output redirection (`sudo echo "text" >> /etc/file`) fails with a "Permission denied" error because the shell handles the redirection (`>>`) before `sudo` elevates privileges.
 * **Command:**
   ```bash
@@ -64,30 +60,30 @@ Standard output redirection (`sudo echo "text" >> /etc/file`) fails with a "Perm
 
 ---
 
-## 7. Create or Delete Multiple Files at Once (Brace Expansion)
+###7. Create or Delete Multiple Files at Once (Brace Expansion)
 Use curly braces `{}` to generate arbitrary strings or sequences without writing a loop.
 * **Examples:**
   ```bash
   # Create multiple numbered files at once
   touch file{1..5}.txt
-
+  
   # Create a project folder structure in one command
   mkdir -p project/{src,docs,tests}
-
+  
   # Quickly back up a configuration file
   cp /etc/nginx/nginx.conf{,.bak}
   ```
 
 ---
 
-## 8. Park a Half-Typed Command (`Ctrl + U` and `Ctrl + Y`)
+###8. Park a Half-Typed Command (`Ctrl + U` and `Ctrl + Y`)
 If you are halfway through typing a long command and realize you need to run something else first, you don't have to delete your work.
 * **`Ctrl + U`:** Cuts everything from the cursor back to the start of the line and stores it in the terminal's kill-ring (clipboard).
 * **`Ctrl + Y`:** Pastes ("yanks") the cut command back onto the prompt once you are ready to finish it.
 
 ---
 
-## 9. Pause and Resume Programs (`Ctrl + Z`, `jobs`, `fg`)
+###9. Pause and Resume Programs (`Ctrl + Z`, `jobs`, `fg`)
 Temporarily suspend a foreground application (like a text editor or long-running script) to run other terminal commands, then bring it right back.
 * **`Ctrl + Z`:** Pauses (suspends) the active foreground process and returns you to the shell prompt.
 * **`jobs`:** Lists all suspended or background jobs along with their job numbers.
@@ -95,7 +91,7 @@ Temporarily suspend a foreground application (like a text editor or long-running
 
 ---
 
-## 10. Create Custom Shortcuts (`alias` & `~/.bashrc`)
+###10. Create Custom Shortcuts (`alias` & `~/.bashrc`)
 Turn long, frequently used commands or flag combinations into short, memorable keywords.
 * **Temporary Alias (current session only):**
   ```bash
@@ -111,7 +107,7 @@ Turn long, frequently used commands or flag combinations into short, memorable k
 
 ---
 
-## Quick Reference Cheat Sheet
+###Quick Reference Cheat Sheet
 
 | Shortcut / Command | Action |
 | :--- | :--- |
